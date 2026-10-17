@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts hỗ trợ tiếng Việt đầy đủ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@500;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #070408;
+            --pink-neon: #ff1e80;
+            --pink-bright: #ff5ca8;
+            --pink-soft: #ffb8d9;
+            --white-pure: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 25%, rgba(255, 30, 128, 0.16) 0%, transparent 55%),
+                radial-gradient(circle at 80% 80%, rgba(255, 92, 168, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 20% 80%, rgba(255, 30, 128, 0.1) 0%, transparent 45%);
+            color: var(--white-pure);
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas toàn màn hình cho hiệu ứng hoa hồng & trái tim rơi */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Khung thẻ chính */
+        .glass-card {
+            background: rgba(14, 7, 16, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1.5px solid rgba(255, 92, 168, 0.55);
+            box-shadow: 
+                0 0 25px rgba(255, 30, 128, 0.35),
+                0 0 60px rgba(255, 30, 128, 0.15),
+                inset 0 0 20px rgba(255, 92, 168, 0.15);
+        }
+
+        /* Chữ phát sáng hồng màn hình 1 */
+        .neon-title-initial {
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+            text-shadow: 
+                0 0 8px #ffffff,
+                0 0 16px #ff5ca8,
+                0 0 32px #ff1e80,
+                0 0 55px #ff1e80;
+            animation: softPulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes softPulse {
+            0% {
+                text-shadow: 0 0 6px #fff, 0 0 14px #ff5ca8, 0 0 28px #ff1e80;
+            }
+            100% {
+                text-shadow: 0 0 10px #fff, 0 0 22px #ff85c0, 0 0 42px #ff1e80, 0 0 70px #ff1e80;
+            }
+        }
+
+        /* Nút bấm phát sáng */
+        .pink-glow-btn {
+            background: linear-gradient(135deg, #ff1e80 0%, #ff66b2 50%, #ff1e80 100%);
+            background-size: 200% auto;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 0 20px rgba(255, 30, 128, 0.7), 0 0 40px rgba(255, 30, 128, 0.3);
+            transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .pink-glow-btn:hover {
+            background-position: right center;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 0 28px rgba(255, 92, 168, 0.95), 0 0 55px rgba(255, 30, 128, 0.6);
+        }
+
+        .pink-glow-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Ô nhập tên */
+        .pink-input {
+            background: rgba(24, 10, 28, 0.85);
+            border: 1.5px solid rgba(255, 92, 168, 0.6);
+            color: #ffffff;
+            box-shadow: inset 0 0 12px rgba(255, 30, 128, 0.2), 0 0 15px rgba(255, 30, 128, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .pink-input:focus {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: inset 0 0 15px rgba(255, 30, 128, 0.35), 0 0 25px rgba(255, 92, 168, 0.8);
+        }
+
+        /* =====================================================
+           HIỆU ỨNG VÒNG LẶP KIỂU TỎA SÁNG MẮT CÁ (FISHEYE GLOW)
+           ===================================================== */
+        .fisheye-wrapper {
+            perspective: 700px;
+            transform-style: preserve-3d;
+            position: relative;
+            padding: 1rem 1.25rem;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, rgba(255, 30, 128, 0.32) 0%, rgba(255, 30, 128, 0.08) 50%, transparent 75%);
+            animation: fisheyeAuraLoop 3.2s ease-in-out infinite;
+        }
+
+        @keyframes fisheyeAuraLoop {
+            0%, 100% {
+                transform: scale(0.96) rotateX(4deg);
+                filter: drop-shadow(0 0 12px rgba(255, 30, 128, 0.7));
+            }
+            50% {
+                transform: scale(1.06) rotateX(-4deg);
+                filter: drop-shadow(0 0 28px rgba(255, 130, 196, 1)) drop-shadow(0 0 55px rgba(255, 30, 128, 0.9));
+            }
+        }
+
+        .fisheye-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            line-height: 1.35;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.35rem;
+            transform-style: preserve-3d;
+        }
+
+        /* Mỗi từ hoặc cụm ký tự phồng lên từ tâm như thấu kính mắt cá và phát sáng */
+        .fisheye-char {
+            display: inline-block;
+            color: #ffffff;
+            transform-style: preserve-3d;
+            animation: fisheyeBulge 2.6s ease-in-out infinite;
+            animation-delay: calc(var(--char-index) * 0.07s);
+        }
+
+        @keyframes fisheyeBulge {
+            0%, 100% {
+                transform: perspective(500px) translateZ(0px) scale(0.92, 0.92);
+                text-shadow: 
+                    0 0 5px #ffffff,
+                    0 0 12px #ff5ca8,
+                    0 0 22px #ff1e80;
+                color: #ffe6f2;
+            }
+            50% {
+                transform: perspective(500px) translateZ(65px) scale(1.24, 1.32);
+                text-shadow: 
+                    0 0 10px #ffffff,
+                    0 0 20px #ffffff,
+                    0 0 35px #ff66b2,
+                    0 0 60px #ff1e80,
+                    0 0 90px #ff1e80;
+                color: #ffffff;
+            }
+        }
+
+        /* =====================================================
+           BẢNG LỜI CHÚC & HIỆU ỨNG GÕ CHỮ (TYPEWRITER)
+           ===================================================== */
+        .wishes-board {
+            background: linear-gradient(160deg, rgba(18, 6, 22, 0.88) 0%, rgba(10, 4, 12, 0.92) 100%);
+            border: 1.5px solid rgba(255, 92, 168, 0.65);
+            box-shadow: 
+                0 0 30px rgba(255, 30, 128, 0.3),
+                inset 0 0 25px rgba(255, 30, 128, 0.14);
+            max-height: 52vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Tùy chỉnh thanh cuộn hồng đen */
+        .wishes-board::-webkit-scrollbar {
+            width: 7px;
+        }
+        .wishes-board::-webkit-scrollbar-track {
+            background: rgba(15, 5, 18, 0.8);
+            border-radius: 8px;
+        }
+        .wishes-board::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff1e80, #ff85c0);
+            border-radius: 8px;
+            box-shadow: 0 0 8px #ff1e80;
+        }
+
+        .wish-line {
+            position: relative;
+            padding: 0.55rem 0.85rem;
+            border-radius: 0.75rem;
+            transition: background 0.3s ease;
+            line-height: 1.65;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 92, 168, 0.35);
+        }
+
+        .wish-line:hover {
+            background: rgba(255, 30, 128, 0.12);
+        }
+
+        /* Con trỏ gõ chữ phát sáng */
+        .typing-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.15em;
+            background-color: #ff5ca8;
+            vertical-align: text-bottom;
+            margin-left: 4px;
+            box-shadow: 0 0 10px #ff1e80, 0 0 20px #ffffff;
+            animation: blinkCursor 0.75s step-end infinite;
+        }
+
+        @keyframes blinkCursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* =====================================================
+           HIỆU ỨNG VÒNG LẶP KIỂU SÓNG LẶP ("Thành Đạt gửi lời chúc")
+           ===================================================== */
+        .wave-signature-container {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0.65rem 1.75rem;
+            border-radius: 9999px;
+            background: rgba(255, 30, 128, 0.12);
+            border: 1px solid rgba(255, 133, 192, 0.45);
+            box-shadow: 0 0 22px rgba(255, 30, 128, 0.3);
+        }
+
+        .wave-char {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 
+                0 0 6px #ffffff,
+                0 0 14px #ff5ca8,
+                0 0 28px #ff1e80;
+            animation: waveBounceLoop 1.8s ease-in-out infinite;
+            animation-delay: calc(var(--wave-i) * 0.08s);
+        }
+
+        @keyframes waveBounceLoop {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+                color: #ffffff;
+                text-shadow: 0 0 6px #fff, 0 0 12px #ff5ca8, 0 0 24px #ff1e80;
+            }
+            25% {
+                transform: translateY(-10px) rotate(-3deg) scale(1.1);
+                color: #ffb8d9;
+                text-shadow: 0 0 10px #fff, 0 0 22px #ff1e80, 0 0 40px #ff1e80;
+            }
+            50% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+                color: #ffffff;
+            }
+            75% {
+                transform: translateY(6px) rotate(3deg) scale(0.96);
+                color: #ff85c0;
+            }
+        }
+
+        /* Hiệu ứng rung nhẹ khi chưa nhập tên */
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .shake {
+            animation: shakeError 0.45s ease-in-out;
+        }
+
+        /* Hiệu ứng chuyển màn hình mượt mà */
+        .screen-transition {
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .screen-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.92) translateY(20px);
+            position: absolute;
+        }
+
+        .screen-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+            position: relative;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 select-none">
+
+    <!-- Canvas vẽ Hoa Hồng rơi (Màn hình 1) và Trái Tim Hồng Phát Sáng rơi (Màn hình 2) -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Nút bật/tắt giai điệu nhẹ nhàng góc phải trên -->
+    <button id="musicToggleBtn" title="Bật/Tắt giai điệu 20/10"
+        class="fixed top-4 right-4 z-30 flex items-center gap-2 px-3.5 py-2 rounded-full glass-card text-xs sm:text-sm font-semibold text-white hover:scale-105 active:scale-95 transition-all cursor-pointer">
+        <span id="musicIcon" class="text-pink-400 text-base">🎵</span>
+        <span id="musicLabel" class="hidden sm:inline">Nhạc nền: Tắt</span>
+    </button>
+
+    <!-- ==========================================
+         MÀN HÌNH 1: GIAO DIỆN BAN ĐẦU (HOA HỒNG RƠI)
+         ========================================== -->
+    <main id="screen1" class="screen-transition screen-visible z-10 w-full max-w-xl mx-auto">
+        <div class="glass-card rounded-3xl p-7 sm:p-10 text-center relative overflow-hidden">
+            
+            <!-- Trang trí góc -->
+            <div class="flex justify-center items-center gap-3 mb-4">
+                <span class="inline-block w-12 h-[2px] bg-gradient-to-r from-transparent to-pink-500"></span>
+                <span class="text-2xl sm:text-3xl filter drop-shadow-[0_0_10px_#ff1e80] animate-bounce">🌹</span>
+                <span class="text-xs uppercase tracking-[0.25em] text-pink-300 font-semibold">Happy Vietnamese Women's Day</span>
+                <span class="text-2xl sm:text-3xl filter drop-shadow-[0_0_10px_#ff1e80] animate-bounce" style="animation-delay: 0.3s;">🌹</span>
+                <span class="inline-block w-12 h-[2px] bg-gradient-to-l from-transparent to-pink-500"></span>
+            </div>
+
+            <!-- Tiêu đề chính yêu cầu -->
+            <h1 class="neon-title-initial text-2xl sm:text-4xl md:text-[2.5rem] font-extrabold leading-tight mb-6 tracking-wide">
+                Chúc Mừng ngày phụ nữ Việt Nam 20/10
+            </h1>
+
+            <p class="text-pink-200/90 text-sm sm:text-base mb-7 font-medium">
+                Hãy nhập tên của bạn để mở món quà cùng những lời chúc 20/10 ngọt ngào nhất ✨
+            </p>
+
+            <!-- Khu vực Ô nhập tên & Nút Bắt đầu -->
+            <div class="flex flex-col gap-4 max-w-md mx-auto">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="nameInput" 
+                        maxlength="40"
+                        placeholder="Nhập tên của bạn vào đây..." 
+                        autocomplete="off"
+                        class="pink-input w-full px-5 py-3.5 sm:py-4 rounded-2xl text-center text-base sm:text-lg font-semibold placeholder-pink-300/50"
+                    />
+                    <!-- Thông báo nhỏ nếu quên nhập tên -->
+                    <p id="errorNotice" class="text-pink-400 text-xs sm:text-sm mt-2 min-h-[1.25rem] opacity-0 transition-opacity duration-300 font-medium">
+                        🌸 Bạn ơi, hãy nhập tên trước khi bấm Bắt đầu nhé!
+                    </p>
+                </div>
+
+                <button 
+                    id="startBtn" 
+                    class="pink-glow-btn w-full py-3.5 sm:py-4 px-8 rounded-2xl text-base sm:text-lg font-bold uppercase tracking-wider cursor-pointer flex items-center justify-center gap-2">
+                    <span>Bắt đầu</span>
+                    <span class="text-xl">💖</span>
+                </button>
+            </div>
+
+            <!-- Chân trang nhỏ màn hình 1 -->
+            <div class="mt-7 pt-4 border-t border-pink-500/20 flex justify-center gap-4 text-xs text-pink-300/70">
+                <span>🌹 Tôn vinh phái đẹp</span>
+                <span>•</span>
+                <span>20 Tháng 10</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==========================================
+         MÀN HÌNH 2: MÀN HÌNH LỜI CHÚC (TRÁI TIM HỒNG PHÁT SÁNG RƠI)
+         ========================================== -->
+    <section id="screen2" class="screen-transition screen-hidden z-10 w-full max-w-3xl mx-auto my-auto py-3">
+        <div class="flex flex-col items-center gap-5 sm:gap-6">
+
+            <!-- 1. TIÊU ĐỀ CHÚC + TÊN + 20/10 VUI VẺ (HIỆU ỨNG VÒNG LẶP TỎA SÁNG MẮT CÁ) -->
+            <div class="fisheye-wrapper w-full text-center">
+                <h2 id="fisheyeTitle" class="fisheye-title text-xl sm:text-3xl md:text-4xl uppercase">
+                    <!-- Được render động bằng JS với từng ký tự/từ có hiệu ứng mắt cá -->
+                </h2>
+            </div>
+
+            <!-- 2. BẢNG LỜI CHÚC (HIỆU ỨNG XUẤT HIỆN KIỂU GÕ CHỮ) -->
+            <div class="w-full relative">
+                <!-- Thanh tiêu đề nhỏ của bảng lời chúc -->
+                <div class="flex items-center justify-between px-4 py-2.5 bg-pink-950/60 border border-b-0 border-pink-500/50 rounded-t-2xl backdrop-blur-md">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-pink-500 shadow-[0_0_8px_#ff1e80] animate-ping"></span>
+                        <span class="text-xs sm:text-sm font-bold text-pink-200 tracking-wider uppercase">
+                            💌 Bảng Lời Chúc 20/10 Dành Tặng Bạn
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="skipTypingBtn" class="text-xs px-2.5 py-1 rounded-lg bg-pink-600/40 hover:bg-pink-500/60 border border-pink-400/50 text-white transition cursor-pointer">
+                            Hiện nhanh ⚡
+                        </button>
+                        <button id="replayTypingBtn" class="text-xs px-2.5 py-1 rounded-lg bg-pink-600/40 hover:bg-pink-500/60 border border-pink-400/50 text-white transition cursor-pointer">
+                            Gõ lại 🔄
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nội dung các câu chúc được gõ tự động -->
+                <div id="wishesBoard" class="wishes-board rounded-b-2xl p-5 sm:p-7 space-y-2.5 text-left text-sm sm:text-base md:text-[1.05rem] font-medium select-text">
+                    <div id="typedContent" class="space-y-2.5"></div>
+                </div>
+            </div>
+
+            <!-- 3. DÒNG CHỮ BÊN DƯỚI: "Thành Đạt gửi lời chúc" (HIỆU ỨNG VÒNG LẶP KIỂU SÓNG LẶP) -->
+            <div class="mt-1 flex flex-col items-center gap-3">
+                <div id="waveSignature" class="wave-signature-container text-base sm:text-xl md:text-2xl">
+                    <!-- Các ký tự của "Thành Đạt gửi lời chúc" được tạo tự động để chạy sóng lặp -->
+                </div>
+
+                <!-- Nút quay lại để nhập tên khác nếu muốn -->
+                <button id="backBtn" class="text-xs sm:text-sm text-pink-300/80 hover:text-white underline underline-offset-4 transition cursor-pointer mt-1">
+                    ← Nhập lại tên khác
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        /* =====================================================================
+           1. DỮ LIỆU NỘI DUNG LỜI CHÚC CHÍNH XÁC THEO YÊU CẦU
+           ===================================================================== */
+        const WISHES_LIST = [
+            "Chúc mừng 20/10! Chúc bạn luôn rạng rỡ, tự tin và gặp thật nhiều điều tốt đẹp.",
+            "- Chúc bạn một ngày 20/10 vui vẻ, ngập tràn hoa, quà và những lời yêu thương.",
+            "- Mong nụ cười luôn ở trên môi bạn, không chỉ hôm nay mà trong tất cả những ngày phía trước.",
+            "- Mừng ngày 20/10, chúc một nửa xinh đẹp của thế giới luôn được yêu thương và trân trọng.",
+            "- Chúc bạn có một ngày Phụ nữ Việt Nam thật ấm áp, bình an và đáng nhớ.",
+            "- Chúc mọi dự định của bạn đều thuận lợi, mọi cố gắng đều được ghi nhận và mọi ngày đều thật vui.",
+            "- Ngày 20/10, chúc bạn luôn xinh đẹp theo cách riêng và vững vàng trên hành trình mình lựa chọn.",
+            "- Chúc bạn nhận được thật nhiều niềm vui nhỏ để tạo nên một ngày 20/10 thật trọn vẹn.",
+            "- Chúc mừng ngày Phụ nữ Việt Nam! Mong bạn luôn khỏe mạnh, hạnh phúc và tỏa sáng.",
+            "- Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may mắn và được sống với điều mình yêu."
+        ];
+
+        const SIGNATURE_TEXT = "Thành Đạt gửi lời chúc";
+
+        /* =====================================================================
+           2. HỆ THỐNG PARTICLE CANVAS: HOA HỒNG RƠI (MÀN 1) & TRÁI TIM PHÁT SÁNG (MÀN 2)
+           ===================================================================== */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let sparkles = [];
+        let currentMode = 'ROSES'; // 'ROSES' hoặc 'HEARTS'
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Lớp hạt rơi (Hoa Hồng ở màn hình 1 hoặc Trái Tim Hồng Phát Sáng ở màn hình 2)
+        class FallingParticle {
+            constructor(mode, startRandomY = true) {
+                this.reset(mode, startRandomY);
+            }
+
+            reset(mode, startRandomY = false) {
+                this.mode = mode;
+                this.x = Math.random() * width;
+                this.y = startRandomY ? Math.random() * height : -50 - Math.random() * 80;
+                this.size = mode === 'ROSES'
+                    ? 18 + Math.random() * 18
+                    : 12 + Math.random() * 18;
+                this.speedY = 1.1 + Math.random() * 1.9;
+                this.speedX = (Math.random() - 0.5) * 0.9;
+                this.swayAmp = 0.6 + Math.random() * 1.4;
+                this.swayFreq = 0.01 + Math.random() * 0.02;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spinSpeed = (Math.random() - 0.5) * 0.025;
+                this.opacity = 0.75 + Math.random() * 0.25;
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                // Phân loại hoa hồng / cánh hoa ở màn 1 hoặc sắc độ hồng ở màn 2
+                this.variant = Math.random();
+                const pinkPalette = ['#ff1e80', '#ff4da6', '#ff80bf', '#ff0066', '#ffb3d9'];
+                this.color = pinkPalette[Math.floor(Math.random() * pinkPalette.length)];
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.pulsePhase += 0.04;
+                this.x += this.speedX + Math.sin(this.y * this.swayFreq) * this.swayAmp;
+                this.angle += this.spinSpeed;
+
+                if (this.y > height + 60) {
+                    this.reset(currentMode, false);
+                }
+                if (this.x > width + 60) this.x = -40;
+                if (this.x < -60) this.x = width + 40;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.globalAlpha = this.opacity;
+
+                if (this.mode === 'ROSES') {
+                    // Vẽ bông hoa hồng & cánh hoa hồng lãng mạn
+                    if (this.variant < 0.72) {
+                        ctx.font = `${Math.round(this.size)}px serif`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.shadowColor = '#ff1e80';
+                        ctx.shadowBlur = 12;
+                        ctx.fillText('🌹', 0, 0);
+                    } else {
+                        // Cánh hoa hồng mềm mại rơi xen kẽ
+                        const r = this.size * 0.42;
+                        const grad = ctx.createRadialGradient(0, 0, 1, 0, 0, r);
+                        grad.addColorStop(0, '#ff80bf');
+                        grad.addColorStop(0.6, '#ff1e80');
+                        grad.addColorStop(1, '#99003d');
+                        ctx.fillStyle = grad;
+                        ctx.shadowColor = '#ff1e80';
+                        ctx.shadowBlur = 10;
+                        ctx.beginPath();
+                        ctx.moveTo(0, -r);
+                        ctx.bezierCurveTo(r * 1.2, -r * 0.8, r * 1.1, r * 0.9, 0, r);
+                        ctx.bezierCurveTo(-r * 1.1, r * 0.9, -r * 1.2, -r * 0.8, 0, -r);
+                        ctx.fill();
+                    }
+                } else {
+                    // MÀN HÌNH 2: VẼ TRÁI TIM MÀU HỒNG PHÁT SÁNG RƠI XUỐNG
+                    const pulseScale = 1 + Math.sin(this.pulsePhase) * 0.12;
+                    ctx.scale(pulseScale, pulseScale);
+
+                    const s = this.size;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 22;
+
+                    const grad = ctx.createRadialGradient(0, -s * 0.2, s * 0.05, 0, 0, s);
+                    grad.addColorStop(0, '#ffffff');
+                    grad.addColorStop(0.35, '#ff99cc');
+                    grad.addColorStop(0.75, this.color);
+                    grad.addColorStop(1, '#cc0052');
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    const topCurveHeight = s * 0.3;
+                    ctx.moveTo(0, topCurveHeight);
+                    // Nửa trái của trái tim
+                    ctx.bezierCurveTo(0, 0, -s / 2, 0, -s / 2, topCurveHeight);
+                    ctx.bezierCurveTo(-s / 2, (s + topCurveHeight) / 2, 0, (s + topCurveHeight) / 1.4, 0, s);
+                    // Nửa phải của trái tim
+                    ctx.bezierCurveTo(0, (s + topCurveHeight) / 1.4, s / 2, (s + topCurveHeight) / 2, s / 2, topCurveHeight);
+                    ctx.bezierCurveTo(s / 2, 0, 0, 0, 0, topCurveHeight);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Điểm sáng lấp lánh bên trong trái tim
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                    ctx.beginPath();
+                    ctx.arc(-s * 0.18, topCurveHeight * 0.85, s * 0.08, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Khởi tạo danh sách hạt
+        function initParticles(mode) {
+            currentMode = mode;
+            const count = width < 640 ? 38 : 65;
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push(new FallingParticle(mode, true));
+            }
+        }
+
+        // Hiệu ứng hạt lấp lánh khi di chuột hoặc chạm cảm ứng
+        window.addEventListener('pointermove', (e) => {
+            if (sparkles.length < 40) {
+                sparkles.push({
+                    x: e.clientX,
+                    y: e.clientY,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2 - 0.5,
+                    radius: 1.5 + Math.random() * 2.5,
+                    alpha: 1
+                });
+            }
+        });
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Cập nhật và vẽ các bông hoa hồng hoặc trái tim phát sáng
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw(ctx);
+            }
+
+            // Vẽ các hạt bụi tiên hồng theo trỏ chuột
+            for (let i = sparkles.length - 1; i >= 0; i--) {
+                const sp = sparkles[i];
+                sp.x += sp.vx;
+                sp.y += sp.vy;
+                sp.alpha -= 0.03;
+                if (sp.alpha <= 0) {
+                    sparkles.splice(i, 1);
+                    continue;
+                }
+                ctx.save();
+                ctx.globalAlpha = sp.alpha;
+                ctx.fillStyle = '#ff85c0';
+                ctx.shadowColor = '#ff1e80';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(sp.x, sp.y, sp.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        /* =====================================================================
+           3. TẠO HIỆU ỨNG TIÊU ĐỀ "TỎA SÁNG MẮT CÁ" & CHỮ KÝ "SÓNG LẶP"
+           ===================================================================== */
+        const fisheyeTitleEl = document.getElementById('fisheyeTitle');
+        const waveSignatureEl = document.getElementById('waveSignature');
+
+        // Render dòng tiêu đề: CHÚC "Tên đã nhập" 20/10 VUI VẺ với hiệu ứng mắt cá
+        function renderFisheyeTitle(userName) {
+            fisheyeTitleEl.innerHTML = '';
+            const fullTitle = `CHÚC ${userName.toUpperCase()} 20/10 VUI VẺ`;
+            const words = fullTitle.split(' ');
+            let charGlobalIndex = 0;
+
+            words.forEach((word) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'inline-flex whitespace-nowrap mx-1';
+
+                Array.from(word).forEach((ch) => {
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'fisheye-char';
+                    charSpan.style.setProperty('--char-index', charGlobalIndex);
+                    charSpan.textContent = ch;
+                    wordSpan.appendChild(charSpan);
+                    charGlobalIndex++;
+                });
+
+                fisheyeTitleEl.appendChild(wordSpan);
+            });
+        }
+
+        // Render dòng chữ: "Thành Đạt gửi lời chúc" với hiệu ứng vòng lặp kiểu sóng lặp
+        function renderWaveSignature() {
+            waveSignatureEl.innerHTML = '';
+            // Thêm biểu tượng trái tim hai bên
+            const prefix = document.createElement('span');
+            prefix.className = 'mr-2 text-pink-400';
+            prefix.textContent = '💖';
+            waveSignatureEl.appendChild(prefix);
+
+            Array.from(SIGNATURE_TEXT).forEach((ch, idx) => {
+                const span = document.createElement('span');
+                span.className = 'wave-char';
+                span.style.setProperty('--wave-i', idx);
+                span.innerHTML = ch === ' ' ? '&nbsp;' : ch;
+                waveSignatureEl.appendChild(span);
+            });
+
+            const suffix = document.createElement('span');
+            suffix.className = 'ml-2 text-pink-400';
+            suffix.textContent = '💖';
+            waveSignatureEl.appendChild(suffix);
+        }
+
+        /* =====================================================================
+           4. HIỆU ỨNG GÕ CHỮ (TYPEWRITER) CHO BẢNG LỜI CHÚC
+           ===================================================================== */
+        const typedContentEl = document.getElementById('typedContent');
+        const wishesBoardEl = document.getElementById('wishesBoard');
+        let typingTimeouts = [];
+        let isTyping = false;
+
+        function clearTypingTimeouts() {
+            typingTimeouts.forEach(t => clearTimeout(t));
+            typingTimeouts = [];
+            isTyping = false;
+        }
+
+        function startTypewriterEffect() {
+            clearTypingTimeouts();
+            typedContentEl.innerHTML = '';
+            isTyping = true;
+
+            let lineIndex = 0;
+            let charIndex = 0;
+            let currentLineDiv = null;
+            let currentTextSpan = null;
+            const cursorSpan = document.createElement('span');
+            cursorSpan.className = 'typing-cursor';
+
+            function typeNextChar() {
+                if (lineIndex >= WISHES_LIST.length) {
+                    isTyping = false;
+                    return;
+                }
+
+                const currentWish = WISHES_LIST[lineIndex];
+
+                // Bắt đầu một dòng lời chúc mới
+                if (charIndex === 0) {
+                    currentLineDiv = document.createElement('div');
+                    currentLineDiv.className = 'wish-line';
+                    currentTextSpan = document.createElement('span');
+                    currentLineDiv.appendChild(currentTextSpan);
+                    currentLineDiv.appendChild(cursorSpan);
+                    typedContentEl.appendChild(currentLineDiv);
+                }
+
+                currentTextSpan.textContent += currentWish.charAt(charIndex);
+                charIndex++;
+
+                // Tự động cuộn xuống mượt mà theo dòng chữ đang gõ
+                wishesBoardEl.scrollTop = wishesBoardEl.scrollHeight;
+
+                if (charIndex < currentWish.length) {
+                    const delay = 22 + Math.random() * 18;
+                    const t = setTimeout(typeNextChar, delay);
+                    typingTimeouts.push(t);
+                } else {
+                    // Chuyển sang câu chúc tiếp theo
+                    lineIndex++;
+                    charIndex = 0;
+                    const pauseBetweenLines = 360;
+                    const t = setTimeout(typeNextChar, pauseBetweenLines);
+                    typingTimeouts.push(t);
+                }
+            }
+
+            typeNextChar();
+        }
+
+        // Hiển thị toàn bộ lời chúc ngay lập tức khi bấm "Hiện nhanh"
+        function showAllWishesImmediately() {
+            clearTypingTimeouts();
+            typedContentEl.innerHTML = '';
+
+            WISHES_LIST.forEach((wish, idx) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'wish-line';
+                lineDiv.textContent = wish;
+                if (idx === WISHES_LIST.length - 1) {
+                    const cursorSpan = document.createElement('span');
+                    cursorSpan.className = 'typing-cursor';
+                    lineDiv.appendChild(cursorSpan);
+                }
+                typedContentEl.appendChild(lineDiv);
+            });
+
+            wishesBoardEl.scrollTop = wishesBoardEl.scrollHeight;
+        }
+
+        /* =====================================================================
+           5. ÂM THANH GIAI ĐIỆU LÃNG MẠN (WEB AUDIO SYNTH - KHÔNG CẦN FILE NGOÀI)
+           ===================================================================== */
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicInterval = null;
+
+        function playRomanticChime() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            // Giai điệu hợp âm nhẹ nhàng chúc mừng
+            const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25];
+            let step = 0;
+
+            function triggerNote() {
+                if (!isMusicPlaying) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(notes[step % notes.length], now);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.exponentialRampToValueAtTime(0.06, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 1.45);
+                step++;
+            }
+
+            triggerNote();
+            musicInterval = setInterval(triggerNote, 650);
+        }
+
+        function toggleMusic() {
+            const label = document.getElementById('musicLabel');
+            const icon = document.getElementById('musicIcon');
+            if (isMusicPlaying) {
+                isMusicPlaying = false;
+                clearInterval(musicInterval);
+                label.textContent = 'Nhạc nền: Tắt';
+                icon.textContent = '🎵';
+            } else {
+                isMusicPlaying = true;
+                playRomanticChime();
+                label.textContent = 'Nhạc nền: Bật';
+                icon.textContent = '🎶';
+            }
+        }
+
+        document.getElementById('musicToggleBtn').addEventListener('click', toggleMusic);
+
+        /* =====================================================================
+           6. XỬ LÝ SỰ KIỆN CHUYỂN MÀN HÌNH & NÚT BẤM
+           ===================================================================== */
+        const screen1 = document.getElementById('screen1');
+        const screen2 = document.getElementById('screen2');
+        const nameInput = document.getElementById('nameInput');
+        const errorNotice = document.getElementById('errorNotice');
+        const startBtn = document.getElementById('startBtn');
+        const backBtn = document.getElementById('backBtn');
+        const skipTypingBtn = document.getElementById('skipTypingBtn');
+        const replayTypingBtn = document.getElementById('replayTypingBtn');
+
+        function handleStartGreeting() {
+            const enteredName = nameInput.value.trim();
+
+            if (!enteredName) {
+                errorNotice.style.opacity = '1';
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Reflow để kích hoạt lại animation
+                nameInput.classList.add('shake');
+                nameInput.focus();
+                return;
+            }
+
+            errorNotice.style.opacity = '0';
+
+            // 1. Tạo tiêu đề hiệu ứng tỏa sáng mắt cá với tên người dùng đã nhập
+            renderFisheyeTitle(enteredName);
+
+            // 2. Tạo dòng chữ ký hiệu ứng sóng lặp "Thành Đạt gửi lời chúc"
+            renderWaveSignature();
+
+            // 3. Đổi hiệu ứng nền sang Trái Tim Màu Hồng Phát Sáng rơi xuống
+            initParticles('HEARTS');
+
+            // 4. Chuyển từ màn hình 1 sang màn hình 2
+            screen1.classList.remove('screen-visible');
+            screen1.classList.add('screen-hidden');
+
+            screen2.classList.remove('screen-hidden');
+            screen2.classList.add('screen-visible');
+
+            // 5. Bắt đầu hiệu ứng gõ chữ trên bảng lời chúc
+            setTimeout(() => {
+                startTypewriterEffect();
+            }, 450);
+        }
+
+        startBtn.addEventListener('click', handleStartGreeting);
+
+        nameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleStartGreeting();
+            } else {
+                errorNotice.style.opacity = '0';
+            }
+        });
+
+        skipTypingBtn.addEventListener('click', showAllWishesImmediately);
+        replayTypingBtn.addEventListener('click', startTypewriterEffect);
+
+        backBtn.addEventListener('click', () => {
+            clearTypingTimeouts();
+            initParticles('ROSES');
+            screen2.classList.remove('screen-visible');
+            screen2.classList.add('screen-hidden');
+
+            screen1.classList.remove('screen-hidden');
+            screen1.classList.add('screen-visible');
+            nameInput.focus();
+        });
+
+        // Khởi động trang web khi tải xong
+        window.onload = function () {
+            initParticles('ROSES');
+            animateCanvas();
+            renderWaveSignature();
+            nameInput.focus();
+        };
+    </script>
+</body>
+</html>
