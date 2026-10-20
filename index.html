@@ -453,7 +453,7 @@
       box-shadow: 0 0 15px rgba(255, 42, 133, 0.65);
     }
 
-    /* Thanh điều khiển nhạc YouTube 60s ở đáy trang */
+    /* Thanh điều khiển nhạc YouTube 120s ở đáy trang */
     .music-bar {
       position: fixed;
       bottom: 14px;
@@ -665,13 +665,13 @@
     <div id="ytPlayerContainer"></div>
   </div>
 
-  <!-- Thanh trạng thái nhạc 60 giây -->
+  <!-- Thanh trạng thái nhạc 120 giây -->
   <div id="musicBar" class="music-bar">
     <div class="music-info">
       <div id="musicDisc" class="music-disc">🎵</div>
       <div class="music-text-wrap">
         <div id="musicTitle" class="music-title">Đang kết nối nhạc...</div>
-        <div id="musicTimer" class="music-timer">Đoạn nhạc 60s: 00:00 / 01:00</div>
+        <div id="musicTimer" class="music-timer">Đoạn nhạc 120s: 00:00 / 02:00</div>
       </div>
     </div>
     <div class="music-controls">
@@ -685,14 +685,23 @@
     /**************************************************************
      * 1. DỮ LIỆU LỜI CHÚC & 3 LINK YOUTUBE CỦA BẠN
      **************************************************************/
+    const MAX_DURATION_SECONDS = 120; // Phát 120 giây (2 phút)
+
     const WISH_CONFIG = {
       ban: {
         label: "Bạn",
         youtubeId: "5h46b1Lm8DU", // Link bài hát dành cho Bạn
         songName: "Một Ngày Buồn - Kiều Chi",
-        message: `Chúc mừng 20/10! Chúc bạn luôn rạng rỡ, tự tin và gặp thật nhiều điều tốt đẹp..
- Chúc mừng ngày Phụ nữ Việt Nam! Mong bạn luôn khỏe mạnh, hạnh phúc và tỏa sáng.
-Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may mắn và được sống với điều mình yêu.`
+        message: `Chúc mừng 20/10! Chúc bạn luôn rạng rỡ, tự tin và gặp thật nhiều điều tốt đẹp.
+- Chúc bạn một ngày 20/10 vui vẻ, ngập tràn hoa, quà và những lời yêu thương.
+- Mong nụ cười luôn ở trên môi bạn, không chỉ hôm nay mà trong tất cả những ngày phía trước.
+- Mừng ngày 20/10, chúc một nửa xinh đẹp của thế giới luôn được yêu thương và trân trọng.
+- Chúc bạn có một ngày Phụ nữ Việt Nam thật ấm áp, bình an và đáng nhớ.
+- Chúc mọi dự định của bạn đều thuận lợi, mọi cố gắng đều được ghi nhận và mọi ngày đều thật vui.
+- Ngày 20/10, chúc bạn luôn xinh đẹp theo cách riêng và vững vàng trên hành trình mình lựa chọn.
+- Chúc bạn nhận được thật nhiều niềm vui nhỏ để tạo nên một ngày 20/10 thật trọn vẹn.
+- Chúc mừng ngày Phụ nữ Việt Nam! Mong bạn luôn khỏe mạnh, hạnh phúc và tỏa sáng.
+1. Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may mắn và được sống với điều mình yêu.`
       },
       me: {
         label: "Mẹ",
@@ -705,8 +714,9 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
         youtubeId: "rYc1UbgbMIY", // Link bài hát dành cho Chị
         songName: "Em Xinh - MONO",
         message: `Chúc chị luôn xinh đẹp, khỏe mạnh, vui vẻ và gặp nhiều may mắn. Mong mọi dự định đều thuận lợi và mỗi ngày đều có thêm lý do để mỉm cười.`
-     Mong những nỗ lực của chị/em luôn được đền đáp xứng đáng. Chúc ngày 20/10 vui vẻ và thật nhiều năng lượng. };
-    
+      }
+    };
+
     /**************************************************************
      * 2. HIỆU ỨNG SÓNG LẶP CHO "Thành Đạt gửi lời chúc nha !"
      **************************************************************/
@@ -783,13 +793,20 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
     });
 
     /**************************************************************
-     * 5. TRÌNH PHÁT NHẠC YOUTUBE TỰ ĐỘNG (LẶP ĐOẠN 60 GIÂY)
+     * 5. TRÌNH PHÁT NHẠC YOUTUBE TỰ ĐỘNG (LẶP ĐOẠN 120 GIÂY)
      **************************************************************/
     let ytPlayer = null;
     let ytApiReady = false;
     let pendingVideoId = null;
     let isPlaying = false;
     let timerInterval = null;
+
+    function formatMMSS(totalSeconds) {
+      const clamped = Math.max(0, Math.min(totalSeconds, MAX_DURATION_SECONDS));
+      const mins = String(Math.floor(clamped / 60)).padStart(2, "0");
+      const secs = String(clamped % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
 
     function onYouTubeIframeAPIReady() {
       ytApiReady = true;
@@ -807,7 +824,7 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
         events: {
           onReady: () => {
             if (pendingVideoId) {
-              playYouTube60s(pendingVideoId);
+              playYouTube120s(pendingVideoId);
               pendingVideoId = null;
             }
           },
@@ -832,7 +849,7 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
       });
     }
 
-    function playYouTube60s(videoId) {
+    function playYouTube120s(videoId) {
       document.getElementById("musicBar").classList.add("show");
 
       if (ytApiReady && ytPlayer && typeof ytPlayer.loadVideoById === "function") {
@@ -841,26 +858,26 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
         ytPlayer.loadVideoById({
           videoId: videoId,
           startSeconds: 0,
-          endSeconds: 120
+          endSeconds: MAX_DURATION_SECONDS
         });
         ytPlayer.playVideo();
       } else {
         // Dự phòng trường hợp người dùng bấm ngay khi API đang tải
         pendingVideoId = videoId;
         const container = document.getElementById("ytHiddenWrap");
-        container.innerHTML = `<iframe width="240" height="135" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&end=60&playsinline=1" allow="autoplay; encrypted-media" frameborder="0"></iframe>`;
+        container.innerHTML = `<iframe width="240" height="135" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&end=${MAX_DURATION_SECONDS}&playsinline=1" allow="autoplay; encrypted-media" frameborder="0"></iframe>`;
       }
 
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         if (ytPlayer && typeof ytPlayer.getCurrentTime === "function") {
           const cur = Math.floor(ytPlayer.getCurrentTime() || 0);
-          if (cur >= 120) {
+          if (cur >= MAX_DURATION_SECONDS) {
             ytPlayer.seekTo(0, true);
             ytPlayer.playVideo();
           }
-          const sec = String(Math.min(cur, 120)).padStart(2, "0");
-          document.getElementById("musicTimer").textContent = `Đoạn nhạc 120s: 00:${sec} / 02:00`;
+          document.getElementById("musicTimer").textContent =
+            `Đoạn nhạc 120s: ${formatMMSS(cur)} / 02:00`;
         }
       }, 500);
     }
@@ -913,8 +930,8 @@ Gửi đến bạn lời chúc 20/10 chân thành nhất: luôn an nhiên, may m
       document.getElementById("screenIntro").classList.remove("active");
       document.getElementById("screenWish").classList.add("active");
 
-      // Phát nhạc YouTube 60s tương ứng
-      playYouTube60s(data.youtubeId);
+      // Phát nhạc YouTube 120s tương ứng
+      playYouTube120s(data.youtubeId);
     });
 
     document.getElementById("btnBack").addEventListener("click", () => {
